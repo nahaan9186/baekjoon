@@ -1,32 +1,68 @@
-import sys
-from collections import deque
+import sys, heapq
+from typing import MutableSequence
 
-N = int(sys.stdin.readline())
+
 # N = 5
-li = [sys.stdin.readline().rstrip() for i in range(N)] 
 #li = ['asdf','asd','z','d','f','a','fd','as','hg','eg','yj','er','cv','sd']
 
-tmp = set(li)
-li = list(tmp)
 
-def quickSort( A:list, L:int, R:int ):
-    if L < R:
-        pivot = partition(A,L,R)
-        quickSort(A,L,pivot -1)
-        quickSort(A,pivot +1, R)
-    return A
+def qsort_len(a: MutableSequence, left: int, right: int) -> None:
+    """a[left] ~ a[right]를 퀵 정렬"""
+    pl = left                   # 왼쪽 커서
+    pr = right                  # 오른쪽 커서
+    x = a[(left + right) // 2]  # 피벗(가운데 요소)
 
-def partition(A:list, x:int, y:int) -> int:
-    i = x - 1
-    j = x
-    while j < y :
-        if len(A[j]) <= len(A[y]):
+    while pl <= pr:    # 실습 6-10과 같은 while 문
+        while len(a[pl]) < len(x): pl += 1
+        while len(a[pr]) > len(x): pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    if left < pr: qsort_len(a, left, pr)
+    if pl < right: qsort_len(a, pl, right)
+
+def quick_sort_len(a: MutableSequence) -> None:
+    """퀵 정렬"""
+    qsort_len(a, 0, len(a) - 1)
+    
+def quick_sort_str(a: MutableSequence, left: int, right: int) -> None:
+    """a[left] ~ a[right]를 퀵 정렬"""
+    pl = left                   # 왼쪽 커서
+    pr = right                  # 오른쪽 커서
+    x = a[(left + right) // 2]  # 피벗(가운데 요소)
+
+    while pl <= pr:    # 실습 6-10과 같은 while 문
+        while a[pl] < x: pl += 1
+        while a[pr] > x: pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    if left < pr: quick_sort_str(a, left, pr)
+    if pl < right: quick_sort_str(a, pl, right)
+
+def quick_sort_len(a: MutableSequence) -> None:
+    """퀵 정렬"""
+    qsort_len(a, 0, len(a) - 1)
+
+if __name__ == '__main__':
+    N = int(sys.stdin.readline().rstrip())
+    x = [sys.stdin.readline().rstrip() for i in range(N)]
+    x = set(x)
+    x = list(x)
+    quick_sort_len(x)      # 배열 x를 퀵 정렬
+
+        # 길이가 같은 문자열끼리 사전 순으로 정렬
+    i = 0
+    while i < len(x):
+        length_group_start = i
+        current_length = len(x[i])
+        while i < len(x) and len(x[i]) == current_length:
             i += 1
-            A[i],A[j] = A[j],A[i]
-        j += 1
-    A[i+1],A[y] = A[y],A[i+1]
-    return i+1
-
-res = quickSort(li, 0, len(li)-1)
-for i in res:
-    print(i)
+        quick_sort_str(x, length_group_start, i - 1)
+    
+    for string in x:
+        print(string)
