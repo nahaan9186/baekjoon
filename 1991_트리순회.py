@@ -1,77 +1,77 @@
-from collections import deque
+import sys
+# N = 7
+# li = f'A B C\nB D .\nC E F\nE . .\nF . G\nD . .\nG . .'
+N = int (input())
+li = [sys.stdin.readline().rstrip() for i in range(N)]
+# print(li)
+root = li[0][0]
 
+class Node:
+    '''node of a binary tree'''
+    def __init__(self, data) -> None:
+        parts = data.split()
+        # print(parts)
+        self.node_name = parts[0]
+        self.node_left = parts[1] if parts[1] != '.' else None
+        self.node_right = parts[2] if parts[2] != '.' else None
 
-N = 7
+class BinaryTree:
+    '''binary tree creation'''
+    def __init__(self, data_list, root) -> None:
+        self.nodes = {}
+        for i, data in enumerate(data_list):
+            node = Node(data)
+            self.nodes[node.node_name] = node
 
-li = [
-    ['A', 'B', 'C'],
-    ['B', '.', 'D'],
-    ['C', 'E', 'F'],
-    ['E', '.', '.'],
-    ['F', '.', 'G'],
-    ['D', '.', '.'],
-    ['G', '.', '.']
-]
-def mk_li(A):
-    li = [''.join(item) for item in A]
-    return li
-
-#전위 순회
-res_preorder = []
-def preorder(li,left,right,degree):
-    if li[degree][left] is None:
-        return -1
-    else:
-        res_preorder.append(li[degree][left])   # degree가 0일때만 li[0][0] append
-        print(f'{res_preorder}, {degree}, {li[degree][left]}')
-        if li[degree][left+1] != '.':   # li[0][1] 이 '.'이 아니면 append 후 재귀호출
-            if degree == 0:
-                res_preorder.append(li[degree][left+1])
-                print(f'{res_preorder}, {degree}, {li[degree][left+1]}')
-                degree += 1
-                preorder(li,left,right,degree)
-            else:
-                if li[degree][left+1] in res_preorder:
-                    degree += 1
-                    preorder(li,left,right,degree)
-                else:
-                    res_preorder.append(li[degree][left+1])
-                    print(f'{res_preorder}, {degree}, {li[degree][left+1]}')
-                    degree += 1
-                    preorder(li,left,right,degree)
-        elif li[degree][right] != '.':    # left side append가 다 끝나고, li[0][2] 이 '.'이 아니면 append 후 재귀호출
-            if degree == 0:
-                res_preorder.append(li[degree][right])
-                print(f'{res_preorder}, {degree}, {li[degree][right]}')
-                degree += 1
-                preorder(li,left,right,degree)
-            else:
-                if li[degree][right] in res_preorder:
-                    degree += 1
-                    preorder(li,left,right,degree)
-                else:
-                    res_preorder.append(li[degree][right])
-                    print(f'{res_preorder}, {degree}, {li[degree][right]}')
-                    degree += 1
-                    preorder(li,left,right,degree)
-        return res_preorder
-
+    def preorder(self, root, path):
+        '''전위 순회'''
+        path.append(root)
         
+        left_child = self.nodes[root].node_left
+        if left_child != None:
+            self.preorder(left_child, path)
+        
+        right_child = self.nodes[root].node_right
+        if right_child != None:
+            self.preorder(right_child, path)
+        
+        return path
 
+    def inorder(self, root, path=[]):
+        '''중위 순회'''
 
-#중위 순회
-def inorder(li):
-    return 0
+        left_child = self.nodes[root].node_left
+        if left_child != None:
+            self.inorder(left_child, path) 
+    
+        path.append(root)
 
-#후위 순회
-def postorder(li):
-    return 0
+        right_child = self.nodes[root].node_right
+        if right_child != None:
+            self.inorder(right_child, path)     
 
-mk_li = mk_li(li)
-print(mk_li)
+        return path
 
-print(f'preorder = {preorder(mk_li,0,2,0)}')
+    def postorder(self, root, path=[]):
+        '''후위 순회'''
 
-print(f'inorder = {inorder(li)}')
+        left_child = self.nodes[root].node_left
+        if left_child != None:
+            self.postorder(left_child, path) 
 
-print(f'postorder = {postorder(li)}')
+        right_child = self.nodes[root].node_right
+        if right_child != None:
+            self.postorder(right_child, path)  
+
+        path.append(root) 
+
+        return path
+
+tree = BinaryTree(li, root)
+
+path_pre = tree.preorder(root,[])
+print(''.join(path_pre))
+path_in = tree.inorder(root,[])
+print(''.join(path_in))
+path_post = tree.postorder(root,[])
+print(''.join(path_post))
